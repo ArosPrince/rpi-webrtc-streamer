@@ -173,6 +173,7 @@ bool Streamer::InitializePeerConnection() {
 }
 
 void Streamer::UpdateMaxBitrate() {
+    RTC_LOG(INFO) << "[JJ]: UpdateMaxBitrate()";
     RTC_DCHECK(peer_connection_);
 
     auto senders = peer_connection_->GetSenders();
@@ -368,6 +369,7 @@ void Streamer::OnPeerDisconnected(int peer_id) {
 }
 
 void Streamer::OnMessageFromPeer(int peer_id, const std::string& message) {
+    RTC_LOG(INFO) << "[JJ]: onMessageFromPeer: " << message;
     RTC_CHECK(peer_id_ == peer_id || peer_id_ == -1);
     RTC_CHECK(!message.empty());
 
