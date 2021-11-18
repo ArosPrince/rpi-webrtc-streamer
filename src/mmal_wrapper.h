@@ -102,12 +102,15 @@ class MMALEncoderWrapper : public FrameQueue {
     // TODO: merge the ReinitEncoder to SetParam and Reinit Internal
     bool ReinitEncoder(wstreamer::VideoEncodingParams config);
     bool ReinitEncoderInternal();
+    bool ReinitEncoderWithBitrate(int bitrate);
 
     bool StartCapture();
     bool StopCapture();
 
     bool SetRate(int framerate, int bitrate);
     bool Zoom(wstreamer::ZoomOptions options);
+
+    bool SetBitRate(int bitrate);
 
     // When there is a KeyFrame request, it requests the MMAL to generate a key
     // frame. MMAL generates a key frame, and then operates as it is currently

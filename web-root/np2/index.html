@@ -106,6 +106,14 @@
                         </select>
                     </div>
                 </div> <!-- configdetails -->
+                <div class="configdetails">
+                    <div class="configitem">
+                        <label for="max_bitrate"><span>Bitrate</span></label>
+                        <input id="max_bitrate" type="range" min="0" max="10" value="0"
+                            oninput="max_bitrate_disp.value=max_bitrate.value">
+                        <output id="max_bitrate_disp"></output>
+                    </div>
+                </div> <!-- configdetails -->
                 <div class="configButtonsDiv">
                     <button id="resetConfig" class="configButton">Reset</button>
                     <button id="applyConfig" class="configButton">Apply</button>

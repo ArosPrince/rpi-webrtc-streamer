@@ -216,6 +216,7 @@ void StreamerProxy::StopStreamerSignaling(SignalingOutbound* outbound,
 
 void StreamerProxy::MessageFromPeer(int peer_id, const std::string& message) {
     RTC_LOG(INFO) << __FUNCTION__;
+    RTC_LOG(INFO) << "[JJ] PeerMessage: " << message;
     if (active_signaling_outbound_ != nullptr) {
         signaling_inbound_->OnMessageFromPeer(peer_id, message);
     }

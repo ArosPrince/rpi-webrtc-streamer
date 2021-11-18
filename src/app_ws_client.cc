@@ -278,6 +278,8 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
     RTC_LOG(INFO) << __FUNCTION__ << "(" << sockid << ")";
     RTC_DCHECK(config_media_ != nullptr);
 
+    RTC_LOG(INFO) << "[JJ] ws message " << message;
+
     Json::Reader json_reader;
     Json::Value json_value;
     std::string cmd;
@@ -330,6 +332,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
 
     // command register
     if (cmd.compare(kValueCmdRegister) == 0) {
+        RTC_LOG(INFO) << "[JJ] Register command";
         int client_id, room_id;
         if (!rtc::GetIntFromJsonObject(json_value, kKeyRegisterRoomId,
                                        &room_id) ||
@@ -369,6 +372,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
     }
     // command send
     else if (cmd.compare(kValueCmdSend) == 0) {
+        RTC_LOG(INFO) << "[JJ] Send command";
         std::string msg;
         rtc::GetStringFromJsonObject(json_value, kKeySendMessage, &msg);
 
@@ -410,6 +414,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
 
     // command message
     else if (cmd.compare(kValueCmdMessage) == 0) {
+        RTC_LOG(INFO) << "[JJ] Message command";
         //  cmd : message ...
         std::string cmd_type;
         rtc::GetStringFromJsonObject(json_value, kKeyCmdType, &cmd_type);
@@ -474,6 +479,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
 
     // command request
     else if (cmd.compare(kValueCmdRequest) == 0) {
+        RTC_LOG(INFO) << "[JJ] Request command";
         //  cmd : request, ...
         std::string cmd_type, transaction;
 
@@ -484,7 +490,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
         //
         // Device info request
         //
-        if (cmd_type.compare(kValueTypepDeviceInfo) == 0) {
+        if (cmd_type.compare(kValueTypepDeviceInfo) == 0) {            
             Json::Value response_data;
             response_data[kDataKeyDeviceId] = deviceid_;
             response_data[kDataKeyMcVersion] = kMediaConfigVersion;
@@ -557,6 +563,8 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
                 return true;
             }
 
+            RTC_LOG(INFO) << "[JJ] Config command, data: " << data;
+
             //
             // Read Command
             //
@@ -607,10 +615,14 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
             // Apply Command
             //
             else if (data.compare(kValueDataApply) == 0) {
+                RTC_LOG(INFO) << "[JJ] Config Apply command";
                 if (IsSignalingSessionActive() == true) {
                     webrtc::MMALWrapper::Instance()->SetEncoderConfigParams();
+                    //RTC_LOG(INFO) << "[JJ] Applying with bitrate: " << config_media_->GetMaxBitrate();
                     if (webrtc::MMALWrapper::Instance()
-                            ->ReinitEncoderInternal() == true) {
+                            ->ReinitEncoderInternal() == true) {                    
+                    // if (webrtc::MMALWrapper::Instance()
+                    //        ->ReinitEncoderWithBitrate(config_media_->GetMaxBitrate()) == true) {
                         RTC_LOG(INFO) << "ReinitEncoderInternal Success";
                         // restart capture
                         webrtc::MMALWrapper::Instance()->StartCapture();
@@ -629,6 +641,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
                 return true;
             }
 
+            auto oldBitrate = config_media_->GetMaxBitrate();
             if (config_media_->FromJson(data, &updated_config, json_error) ==
                 false) {
                 RTC_LOG(LS_ERROR) << "Failed to parse config data";
@@ -636,6 +649,18 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
                              json_error);
             } else {
                 RTC_LOG(INFO) << "Media Config : " << updated_config;
+                //webrtc::MMALWrapper::Instance()->SetBitRate(config_media_->GetMaxBitrate());
+
+                if (oldBitrate != config_media_->GetMaxBitrate()){
+                    RTC_LOG(INFO) << "[JJ] Bitrate change detected: " << config_media_->GetMaxBitrate();
+                    // auto pid = getpid();
+                    // RTC_LOG(INFO) << "[JJ] Process PID: " << pid;
+                    // std::string cmd = std::string("./restart.sh ") + std::to_string(pid);
+                    // system(cmd.c_str());
+                    config_media_->Save();
+                    raise(SIGINT);
+                }
+
                 SendResponse(sockid, true, kValueTypeConfig, transaction,
                              updated_config, "");
             }
@@ -646,6 +671,7 @@ bool AppWsClient::OnMessage(int sockid, const std::string& message) {
         // Still image capture request
         //
         else if (cmd_type.compare(kValueTypeStill) == 0) {
+            RTC_LOG(INFO) << "[JJ] Still request";
             // { cmd : request, type: still, data : { ... }  }
             Json::Value json_data_value;
             if (IsSignalingSessionActive() == true) {

@@ -47,7 +47,7 @@ import {
 // Each config item key for the media configuration
 // and the default value of the item
 const config_media_params = {
-  // max_bitrate: { type: kTypeIntegerRange, default_value: 3500000, max: 17000000, min: 200 },
+  max_bitrate: { type: kTypeIntegerRange, default_value: 3500000, max: 17000000, min: 200 },
   // resolution_4_3_enable: { type: kTypeBoolean, default_value: true},
   video_rotation: {
     type: kTypeIntegerItem,
@@ -163,6 +163,7 @@ const config_media_params = {
 ////////////////////////////////////////////////////////////////////////////////
 class ConfigMedia extends ConfigParams {
   constructor() {
+    console.log('[JJ]: ConfigMedia constructor', config_media_params);
     super(config_media_params);
     this._element_container = {};
   }

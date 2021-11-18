@@ -174,6 +174,7 @@ int32_t RaspiEncoderImpl::InitEncode(const VideoCodec* codec_settings,
         init_allocator.Allocate(VideoBitrateAllocationParameters(
             DataRate::KilobitsPerSec(codec_.startBitrate),
             codec_.maxFramerate));
+    RTC_LOG(INFO) << "[JJ]: Seriously???";
     SetRates(RateControlParameters(allocation, codec_.maxFramerate));
     return WEBRTC_VIDEO_CODEC_OK;
 }
@@ -201,7 +202,20 @@ int32_t RaspiEncoderImpl::RegisterEncodeCompleteCallback(
     return WEBRTC_VIDEO_CODEC_OK;
 }
 
+#include <execinfo.h>
+#define BT_BUF_SIZE 100
 void RaspiEncoderImpl::SetRates(const RateControlParameters& parameters) {
+    //JJ TODO figure out from where this gets periodically called
+    RTC_LOG(INFO) << "[JJ]: RaspiEncoderImpl::SetRates";    
+    
+    int nptrs;
+    void *buffer[BT_BUF_SIZE];
+    char **strings;
+
+    nptrs = backtrace(buffer, BT_BUF_SIZE);
+    printf("backtrace() returned %d addresses\n", nptrs);
+    backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO);
+
     wstreamer::VideoEncodingParams resolution;
     int target_bitrate = parameters.bitrate.get_sum_bps() / 1000;  // kbps
     uint32_t framerate = static_cast<uint32_t>(parameters.framerate_fps);

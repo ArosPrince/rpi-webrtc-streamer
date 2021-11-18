@@ -807,6 +807,7 @@ bool ConfigMedia::FromJson(const std::string &config_message,
         if (config_remote_access == true &&                                   \
             rtc::GetValueFromJsonObject(json_value, #config_var, &object) ==  \
                 true) {                                                       \
+            RTC_LOG(INFO) << "[JJ] remote access int: " << #config_var;       \
             if (rtc::GetIntFromJson(object, &config_value) == true) {         \
                 if (Set##name(config_value) == false) {                       \
                     rtc::GetStringFromJson(object, &error_value);             \

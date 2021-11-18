@@ -431,12 +431,20 @@ bool MMALEncoderWrapper::InitEncoder(wstreamer::VideoEncodingParams config) {
     return false;
 }
 
+bool MMALEncoderWrapper::ReinitEncoderWithBitrate(int bitrate){
+    RTC_LOG(INFO) << "[JJ] Changing bitrate from: " << state_.bitrate << " to: " << bitrate;
+    state_.bitrate = bitrate;
+    return ReinitEncoderInternal();
+}
+
 bool MMALEncoderWrapper::ReinitEncoderInternal() {
+    RTC_LOG(INFO) << "[JJ] ReinitEncoderInternal(); bitrate: " << state_.bitrate;
     return ReinitEncoder(wstreamer::VideoEncodingParams(
         state_.width, state_.height, state_.framerate, state_.bitrate / 1000));
 }
 
 bool MMALEncoderWrapper::ReinitEncoder(wstreamer::VideoEncodingParams config) {
+    RTC_LOG(INFO) << "[JJ] ReinitEncoder(); bitrate: " << config.bitrate_ << " framerate: " << config.framerate_;
     MMAL_STATUS_T status = MMAL_SUCCESS;
 
     if (mmal_initialized_ == false) {
@@ -774,8 +782,14 @@ bool MMALEncoderWrapper::SetEncodingParams(
     return false;
 }
 
+bool MMALEncoderWrapper::SetBitRate(int bitrate){
+    RTC_LOG(INFO) << "Setting bitrate: " << bitrate;
+    SetRate(state_.framerate, bitrate);
+}
+
 //
 bool MMALEncoderWrapper::SetRate(int framerate, int bitrate) {
+    RTC_LOG(INFO) << "Setting rate; fps:" << framerate << "; bitrate: " << bitrate;
     if (mmal_initialized_ == false) return true;
     if (state_.framerate != framerate || state_.bitrate != bitrate * 1000) {
         webrtc::MutexLock lock(&mutex_);

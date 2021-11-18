@@ -190,6 +190,9 @@ absl::Status StillCapture::Capture(const wstreamer::StillOptions &options,
             : "",
         ".", getExtensionByEncoding(state_.encoding));
 
+    RTC_LOG(INFO) << "Using this filename: " << filename;
+    RTC_LOG(INFO) << "Using this folder: " << config_media_->GetStillDirectory();
+
     int open_error = 0;
     if ((file_ = FileWrapper::OpenWriteOnly(
              absl::StrCat(config_media_->GetStillDirectory(), "/", filename),

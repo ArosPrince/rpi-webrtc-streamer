@@ -46,6 +46,7 @@ export const kValidValueList = 'valid_value_list';
 class ConfigParams {
   constructor(config_params) {
     // copy configuration params
+    console.log('[JJ]: config_params:', config_params);
     this._config_params = Object.assign({}, config_params);
     for (let key in this._config_params) {
       if (this._config_params.hasOwnProperty(key)) {
@@ -57,6 +58,7 @@ class ConfigParams {
           value.hasOwnProperty(kType)
         ) {
           value[kValue] = value.default_value;
+          console.log('[JJ]: key assigned: ', key);
         } else throw new Error('Required key does not exist');
       } else {
         throw new Error('Parameter value does not exist');
